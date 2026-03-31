@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Pega-Pega</title>
+
+<style>
+  body {
+    text-align: center;
+    background: #111;
+    color: white;
+    font-family: Arial;
+  }
+
+  #area {
+    width: 400px;
+    height: 400px;
+    background: #222;
+    margin: 20px auto;
+    position: relative;
+    border-radius: 10px;
+  }
+
+  .player, .enemy {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    border-radius: 6px;
+  }
+
+  .player {
+    background: #00c6ff;
+  }
+
+  .enemy {
+    background: red;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>🏃‍♂️ Pega-Pega</h1>
+<p>Tempo sobrevivido: <span id="tempo">0</span>s</p>
+
+<div id="area">
+  <div id="player" class="player"></div>
+  <div id="enemy" class="enemy"></div>
+</div>
+
+<script>
+let player = document.getElementById("player");
+let enemy = document.getElementById("enemy");
+
+let x = 180, y = 180;
+let ex = 50, ey = 50;
+
+let velocidade = 10;
+let tempo = 0;
+let jogoRodando = true;
+
+// posição inicial
+player.style.left = x + "px";
+player.style.top = y + "px";
+
+enemy.style.left = ex + "px";
+enemy.style.top = ey + "px";
+
+// controle do jogador
+document.addEventListener("keydown", (e) => {
+  if (!jogoRodando) return;
+
+  if (e.key === "ArrowUp") y -= velocidade;
+  if (e.key === "ArrowDown") y += velocidade;
+  if (e.key === "ArrowLeft") x -= velocidade;
+  if (e.key === "ArrowRight") x += velocidade;
+
+  // limites
+  x = Math.max(0, Math.min(370, x));
+  y = Math.max(0, Math.min(370, y));
+
+  player.style.left = x + "px";
+  player.style.top = y + "px";
+});
+
+// inimigo persegue
+function moverInimigo() {
+  if (!jogoRodando) return;
+
+  if (ex < x) ex += 2;
+  if (ex > x) ex -= 2;
+  if (ey < y) ey += 2;
+  if (ey > y) ey -= 2;
+
+  enemy.style.left = ex + "px";
+  enemy.style.top = ey + "px";
+
+  // colisão
+  if (Math.abs(x - ex) < 25 && Math.abs(y - ey) < 25) {
+    jogoRodando = false;
+    alert("💀 Você foi pego! Tempo: " + tempo + "s");
+  }
+}
+
+// tempo
+setInterval(() => {
+  if (jogoRodando) {
+    tempo++;
+    document.getElementById("tempo").innerText = tempo;
+  }
+}, 1000);
+
+// loop do inimigo
+setInterval(moverInimigo, 20);
+
+</script>
+
+</body>
+</html>
