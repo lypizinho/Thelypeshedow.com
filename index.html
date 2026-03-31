@@ -19,6 +19,7 @@
     margin: 20px auto;
     position: relative;
     border-radius: 10px;
+    box-shadow: 0 0 20px black;
   }
 
   .player, .enemy {
@@ -29,11 +30,11 @@
   }
 
   .player {
-    background: #00c6ff;
+    background: linear-gradient(45deg, #00c6ff, #0072ff);
   }
 
   .enemy {
-    background: red;
+    background: linear-gradient(45deg, red, darkred);
   }
 </style>
 </head>
@@ -43,6 +44,8 @@
 <h1>🏃‍♂️ Pega-Pega</h1>
 <p>Tempo sobrevivido: <span id="tempo">0</span>s</p>
 
+<button onclick="reiniciar()">🔄 Recomeçar</button>
+
 <div id="area">
   <div id="player" class="player"></div>
   <div id="enemy" class="enemy"></div>
@@ -50,50 +53,57 @@
 
 <script>
 let player = document.getElementById("player");
-let enemy = document.getElementById("enemy");
+let enemies = [];
 
 let x = 180, y = 180;
-let ex = 50, ey = 50;
+let enemyElements = [];
 
-let velocidade = 10;
+let velocidade = 5;
+let velocidadeInimigo = 2;
 let tempo = 0;
 let jogoRodando = true;
-
+criarInimigo(); 
 // posição inicial
 player.style.left = x + "px";
 player.style.top = y + "px";
-
 enemy.style.left = ex + "px";
 enemy.style.top = ey + "px";
 
-// controle do jogador
-document.addEventListener("keydown", (e) => {
+// controle suave
+let teclas = {};
+
+document.addEventListener("keydown", (e) => teclas[e.key] = true);
+document.addEventListener("keyup", (e) => teclas[e.key] = false);
+
+function moverPlayer() {
   if (!jogoRodando) return;
 
-  if (e.key === "ArrowUp") y -= velocidade;
-  if (e.key === "ArrowDown") y += velocidade;
-  if (e.key === "ArrowLeft") x -= velocidade;
-  if (e.key === "ArrowRight") x += velocidade;
+  if (teclas["ArrowUp"]) y -= velocidade;
+  if (teclas["ArrowDown"]) y += velocidade;
+  if (teclas["ArrowLeft"]) x -= velocidade;
+  if (teclas["ArrowRight"]) x += velocidade;
 
-  // limites
   x = Math.max(0, Math.min(370, x));
   y = Math.max(0, Math.min(370, y));
 
   player.style.left = x + "px";
   player.style.top = y + "px";
-});
+}
 
 // inimigo persegue
 function moverInimigo() {
   if (!jogoRodando) return;
 
-  if (ex < x) ex += 2;
-  if (ex > x) ex -= 2;
-  if (ey < y) ey += 2;
-  if (ey > y) ey -= 2;
+  if (ex < x) ex += velocidadeInimigo;
+  if (ex > x) ex -= velocidadeInimigo;
+  if (ey < y) ey += velocidadeInimigo;
+  if (ey > y) ey -= velocidadeInimigo;
 
   enemy.style.left = ex + "px";
   enemy.style.top = ey + "px";
+
+  // dificuldade aumenta com o tempo
+  velocidadeInimigo = 2 + tempo * 0.1;
 
   // colisão
   if (Math.abs(x - ex) < 25 && Math.abs(y - ey) < 25) {
@@ -103,17 +113,70 @@ function moverInimigo() {
 }
 
 // tempo
-setInterval(() => {
-  if (jogoRodando) {
+let ultimoTempo = 0;
+
+function loop(agora) {
+  if (!jogoRodando) return;
+
+  moverPlayer();
+ function moverInimigos() {
+  if (!jogoRodando) return;
+
+  enemies.forEach((e, i) => {
+    if (e.x < x) e.x += velocidadeInimigo;
+    if (e.x > x) e.x -= velocidadeInimigo;
+    if (e.y < y) e.y += velocidadeInimigo;
+    if (e.y > y) e.y -= velocidadeInimigo;
+
+    enemyElements[i].style.left = e.x + "px";
+    enemyElements[i].style.top = e.y + "px";
+
+    if (Math.abs(x - e.x) < 25 && Math.abs(y - e.y) < 25) {
+      jogoRodando = false;
+      alert("💀 Você foi pego! Tempo: " + tempo + "s");
+    }
+  });
+
+  velocidadeInimigo = 2 + tempo * 0.1;
+}
+
+  if (agora - ultimoTempo >= 1000) {
     tempo++;
     document.getElementById("tempo").innerText = tempo;
+    ultimoTempo = agora;
   }
-}, 1000);
 
-// loop do inimigo
-setInterval(moverInimigo, 20);
+  requestAnimationFrame(loop);
+}
 
-</script>
+requestAnimationFrame(loop);
+function reiniciar() {
+  x = 180; y = 180;
+  ex = 50; ey = 50;
+  tempo = 0;
+  jogoRodando = true;
+  ultimoTempo = 0; // 👈 IMPORTANTE
+
+  player.style.left = x + "px";
+  player.style.top = y + "px";
+  enemy.style.left = ex + "px";
+  enemy.style.top = ey + "px";
+
+  document.getElementById("tempo").innerText = 0;
+}
+
+function criarInimigo() {
+  let ex = Math.random() * 370;
+  let ey = Math.random() * 370;
+
+  enemies.push({x: ex, y: ey});
+
+  let novo = document.createElement("div");
+  novo.classList.add("enemy");
+  document.getElementById("area").appendChild(novo);
+
+  enemyElements.push(novo);
+}
 
 </body>
 </html>
