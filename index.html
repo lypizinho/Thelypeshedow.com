@@ -43,37 +43,41 @@
 
 <h1>🏃‍♂️ Pega-Pega</h1>
 <p>Tempo sobrevivido: <span id="tempo">0</span>s</p>
-
 <button onclick="reiniciar()">🔄 Recomeçar</button>
 
 <div id="area">
   <div id="player" class="player"></div>
-  <div id="enemy" class="enemy"></div>
 </div>
 
 <script>
+
+// ================== VARIÁVEIS ==================
 let player = document.getElementById("player");
-let enemies = [];
 
 let x = 180, y = 180;
-let enemyElements = [];
-
 let velocidade = 5;
+
+let enemies = [];
+let enemyElements = [];
 let velocidadeInimigo = 2;
+
 let tempo = 0;
+let ultimoTempo = 0;
 let jogoRodando = true;
-criarInimigo(); 
-// posição inicial
+
+// ================== INÍCIO ==================
 player.style.left = x + "px";
 player.style.top = y + "px";
-enemy.style.left = ex + "px";
-enemy.style.top = ey + "px";
 
-// controle suave
+criarInimigo();
+
+// ================== CONTROLE ==================
 let teclas = {};
 
 document.addEventListener("keydown", (e) => teclas[e.key] = true);
 document.addEventListener("keyup", (e) => teclas[e.key] = false);
+
+// ================== FUNÇÕES ==================
 
 function moverPlayer() {
   if (!jogoRodando) return;
@@ -90,36 +94,20 @@ function moverPlayer() {
   player.style.top = y + "px";
 }
 
-// inimigo persegue
-function moverInimigo() {
-  if (!jogoRodando) return;
+function criarInimigo() {
+  let ex = Math.random() * 370;
+  let ey = Math.random() * 370;
 
-  if (ex < x) ex += velocidadeInimigo;
-  if (ex > x) ex -= velocidadeInimigo;
-  if (ey < y) ey += velocidadeInimigo;
-  if (ey > y) ey -= velocidadeInimigo;
+  enemies.push({x: ex, y: ey});
 
-  enemy.style.left = ex + "px";
-  enemy.style.top = ey + "px";
+  let novo = document.createElement("div");
+  novo.classList.add("enemy");
+  document.getElementById("area").appendChild(novo);
 
-  // dificuldade aumenta com o tempo
-  velocidadeInimigo = 2 + tempo * 0.1;
-
-  // colisão
-  if (Math.abs(x - ex) < 25 && Math.abs(y - ey) < 25) {
-    jogoRodando = false;
-    alert("💀 Você foi pego! Tempo: " + tempo + "s");
-  }
+  enemyElements.push(novo);
 }
 
-// tempo
-let ultimoTempo = 0;
-
-function loop(agora) {
-  if (!jogoRodando) return;
-
-  moverPlayer();
- function moverInimigos() {
+function moverInimigos() {
   if (!jogoRodando) return;
 
   enemies.forEach((e, i) => {
@@ -140,43 +128,50 @@ function loop(agora) {
   velocidadeInimigo = 2 + tempo * 0.1;
 }
 
+function reiniciar() {
+  x = 180; y = 180;
+  tempo = 0;
+  ultimoTempo = 0;
+  jogoRodando = true;
+
+  enemies = [];
+  enemyElements.forEach(e => e.remove());
+  enemyElements = [];
+
+  criarInimigo();
+
+  player.style.left = x + "px";
+  player.style.top = y + "px";
+
+  document.getElementById("tempo").innerText = 0;
+}
+
+// ================== LOOP ==================
+
+function loop(agora) {
+  if (!jogoRodando) return;
+
+  moverPlayer();
+  moverInimigos();
+
+  // tempo
   if (agora - ultimoTempo >= 1000) {
     tempo++;
     document.getElementById("tempo").innerText = tempo;
     ultimoTempo = agora;
   }
 
+  // novos inimigos
+  if (tempo > 0 && tempo % 5 === 0 && enemies.length < tempo / 5 + 1) {
+    criarInimigo();
+  }
+
   requestAnimationFrame(loop);
 }
 
 requestAnimationFrame(loop);
-function reiniciar() {
-  x = 180; y = 180;
-  ex = 50; ey = 50;
-  tempo = 0;
-  jogoRodando = true;
-  ultimoTempo = 0; // 👈 IMPORTANTE
 
-  player.style.left = x + "px";
-  player.style.top = y + "px";
-  enemy.style.left = ex + "px";
-  enemy.style.top = ey + "px";
-
-  document.getElementById("tempo").innerText = 0;
-}
-
-function criarInimigo() {
-  let ex = Math.random() * 370;
-  let ey = Math.random() * 370;
-
-  enemies.push({x: ex, y: ey});
-
-  let novo = document.createElement("div");
-  novo.classList.add("enemy");
-  document.getElementById("area").appendChild(novo);
-
-  enemyElements.push(novo);
-}
+</script>
 
 </body>
 </html>
