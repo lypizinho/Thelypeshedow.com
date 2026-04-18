@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafios de Lógica de Programação</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background-color: #f9f9f9; 
+            color: #333;
+        }
+        h1 { color: #2c3e50; text-align: center; }
+        .desafio { 
+            background: white; 
+            margin: 20px 0; 
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        .desafio h2 { color: #3498db; }
+        pre { 
+            background: #ecf0f1; 
+            padding: 15px; 
+            border-radius: 5px; 
+            overflow-x: auto; 
+            font-size: 14px;
+        }
+        .exemplo { background: #d5f4e6; }
+        .starter { background: #fff3cd; }
+        button { background: #27ae60; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #219a52; }
+        #console-area { height: 200px; background: #000; color: #0f0; padding: 10px; overflow-y: scroll; margin-top: 20px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>🚀 Desafios de Lógica de Programação</h1>
+    <p>Clique nos botões para carregar o desafio no console simulado. Edite o código e teste! (Abra DevTools para console real.)</p>
+    
+    <div id="desafios">
+        <!-- Desafios serão populados via JS -->
+    </div>
+    
+    <div id="console-area"></div>
+    
+    <script>
+        // Função para log no console simulado
+        function log(msg) {
+            const area = document.getElementById('console-area');
+            area.innerHTML += msg + '<br>';
+            area.scrollTop = area.scrollHeight;
+            console.log(msg); // Também no console real
+        }
+
+        // Desafio 1: Par ou Ímpar
+        function desafio1() {
+            log('=== Desafio 1: Par ou Ímpar ===');
+            log('Escreva função isPar(numero) que retorna true se par.');
+            log('Exemplo: isPar(4) -> true, isPar(7) -> false');
+            log('// Seu código:');
+            log('function isPar(n) {');
+            log('  // complete aqui');
+            log('}');
+            log('log(isPar(10)); // true');
+        }
+
+        // Desafio 2: Soma 1 a N
+        function desafio2() {
+            log('=== Desafio 2: Soma de 1 a N ===');
+            log('função somaAteN(n) soma 1+2+...+n');
+            log('Ex: somaAteN(5) -> 15');
+            log('function somaAteN(n) {');
+            log('  // código');
+            log('}');
+        }
+
+        // ... mais desafios similares
+
+        // Botões
+        document.body.innerHTML += `
+            <div style="text-align: center; margin: 20px 0;">
+                <button onclick="desafio1()">Desafio 1</button>
+                <button onclick="desafio2()">Desafio 2</button>
+                <button onclick="location.reload()">Limpar</button>
+            </div>
+        `;
+
+        log('Bem-vindo! Clique nos desafios.');
+    </script>
+</body>
+</html>
